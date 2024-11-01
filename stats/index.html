@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dim">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Griboovember</title>
+        <link rel="icon" href="/images/griboo.ico" type="image/x-icon">
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    </head>
+    <body>
+        <div class="flex h-screen">
+            <div class="m-auto">
+                <h1 class="font-semibold text-xl">Dawn</h1>
+                <div class="stats stats-vertical lg:stats-horizontal shadow">
+                    <div class="stat">
+                        <div class="stat-figure text-secondary">
+                            <img class="rounded shadow-xl max-w-40 m-4" src="/images/2024-11-01.jpg" alt="Dawn">
+                        </div>
+                        <p class="text-right text-error font-semibold">2024-11-01</p>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure text-primary">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                class="inline-block h-8 w-8 stroke-current">
+                                <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-title">Total Likes</div>
+                        <div class="stat-value text-primary" id="like">0</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure text-secondary">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                class="inline-block h-8 w-8 stroke-current">
+                                <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-title">Page Views</div>
+                        <div class="stat-value text-secondary" id="view">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        const googleScriptURL = "https://script.google.com/macros/s/AKfycbxih_a1DhTMsyb7xjQGklC1g-M14hW96TXSHuc1wLmKhCcrKNBw9EZ06bonCC1NRuabbw/exec"
+
+        const like = document.getElementById("like")
+        const view = document.getElementById("view")
+
+        function updateCounters() {
+            fetch(`${googleScriptURL}?action=getStats`)
+                .then(response => response.text())
+                .then(data => {
+                    const viewCount = data.split(";")[0].split("=")[1]
+                    view.innerText = viewCount;
+                    const likeCount = data.split(";")[1].split("=")[1]
+                    like.innerText = likeCount;
+
+                })
+                .catch(error => console.error("Error fetching like counter:", error));
+        }
+
+        updateCounters()
+
+
+    </script>
+</html>
