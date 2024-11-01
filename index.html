@@ -12,10 +12,124 @@
         <div class="m-auto">
             <h1 class="font-semibold text-xl">Dawn</h1>
             <img class="rounded shadow-xl max-w-xs m-4" src="images/2024-11-01.jpg" alt="Dawn">
-            <div class="text-right">
-                <h1 class="font-semibold text-error">2024-11-01</h1>
+            <div class="flex text-error"> 
+                <div class="flex-1 inline-flex items-center">
+                    <svg id="like" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 pr-2 shadow-xl">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                    <span id="likeCounter">0</span>
+                </div>
+
+                <div class="flex-1 text-right">
+                    <p class="font-semibold">2024-11-01</p>
+                </div>
             </div>
         </div>
     </div>
 </body>
+<script>
+    const googleScriptURL = "https://script.google.com/macros/s/AKfycbzzaIKRLaROCkU4janwUk3erLy0FxwnMUdOGMCvClR4ZV-6OQyF2K0QxeQGKE5wQnFx9w/exec"
+    updatePageViews()
+
+    const like = document.getElementById("like")
+    like.addEventListener("click", () => {
+        animateLikeButton();
+        like.setAttribute("fill", "currentColor")
+        incrementLike()
+    });
+        // Function to add and remove the animation class
+    function animateLikeButton() {
+        like.classList.add("animate-pop");
+        setTimeout(() => {
+            like.classList.remove("animate-pop");
+        }, 300);
+    }
+
+    // Function to fetch like counter without incrementing it
+    function updateLikeCounter() {
+        fetch(`${googleScriptURL}?action=getLikes`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("likeCounter").innerText = data;
+            })
+            .catch(error => console.error("Error fetching like counter:", error));
+    }
+
+
+    // Function to increment the like counter
+    function incrementLike() {
+        fetch(`${googleScriptURL}?action=incrementLike`)
+            .then(response => response.text())
+            .then(data => {
+                console.log("Likes: " + data);
+                document.getElementById("likeCounter").innerText = data;
+                setCookie("liked", "true", 30); // Set "liked" cookie for 7 days
+            })
+            .catch(error => console.error("Error incrementing like counter:", error));
+    }
+
+    function updatePageViews() {
+        fetch(googleScriptURL)
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+
+            })
+            .catch(error => console.error("Error fetching page counter:", error));
+    }
+
+    // Helper function to set a cookie
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+        // Helper function to get a cookie
+    function getCookie(name) {
+        const cookieName = name + "=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const cookieArray = decodedCookie.split(';');
+        for (let i = 0; i < cookieArray.length; i++) {
+            let cookie = cookieArray[i].trim();
+            if (cookie.indexOf(cookieName) === 0) {
+                return cookie.substring(cookieName.length, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    // Check if the user has already liked and update the like button
+    if (checkLikedStatus()) {
+        like.setAttribute("fill", "currentColor")
+        console.log("Photo already liked")
+    }
+
+    updateLikeCounter()
+
+    // Check if the user has already liked
+    function checkLikedStatus() {
+        return getCookie("liked") === "true";
+    }
+
+</script>
+<!-- Tailwind CSS Custom Animation -->
+<style>
+    @keyframes pop {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.3);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .animate-pop {
+        animation: pop 0.2s ease-in-out;
+    }
+</style>
 </html>
