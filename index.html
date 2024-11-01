@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Griboovember</title>
+    <link rel="icon" href="images/griboo.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 </head>
@@ -37,7 +38,7 @@
         like.setAttribute("fill", "currentColor")
         incrementLike()
     });
-        // Function to add and remove the animation class
+
     function animateLikeButton() {
         like.classList.add("animate-pop");
         setTimeout(() => {
@@ -45,7 +46,6 @@
         }, 300);
     }
 
-    // Function to fetch like counter without incrementing it
     function updateLikeCounter() {
         fetch(`${googleScriptURL}?action=getLikes`)
             .then(response => response.text())
@@ -55,8 +55,6 @@
             .catch(error => console.error("Error fetching like counter:", error));
     }
 
-
-    // Function to increment the like counter
     function incrementLike() {
         fetch(`${googleScriptURL}?action=incrementLike`)
             .then(response => response.text())
@@ -78,7 +76,6 @@
             .catch(error => console.error("Error fetching page counter:", error));
     }
 
-    // Helper function to set a cookie
     function setCookie(name, value, days) {
         const date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -86,7 +83,6 @@
         document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
-        // Helper function to get a cookie
     function getCookie(name) {
         const cookieName = name + "=";
         const decodedCookie = decodeURIComponent(document.cookie);
@@ -100,7 +96,6 @@
         return null;
     }
 
-    // Check if the user has already liked and update the like button
     if (checkLikedStatus()) {
         like.setAttribute("fill", "currentColor")
         console.log("Photo already liked")
@@ -108,7 +103,6 @@
 
     updateLikeCounter()
 
-    // Check if the user has already liked
     function checkLikedStatus() {
         return getCookie("liked") === "true";
     }
