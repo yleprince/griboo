@@ -60,13 +60,14 @@
         </div>
     </body>
     <script>
-        const googleScriptURL = "https://script.google.com/macros/s/AKfycbw-SAzyr3SA7B0uZ63fFo2FF7CSKrSd0mZYp273UzF4nO9vmE8Uli__RF__qD5x8uEExg/exec"
+        const day = new Date().toISOString().split('T')[0];
+        const googleScriptURL = `https://script.google.com/macros/s/AKfycbyC_L33KsHGWQk-H6Cp75TmZSOd2KMVMjtbei58PprIOA2yTt96AweD3aoH-aCw_2JVlA/exec?day=${day}`
 
         const like = document.getElementById("like")
         const view = document.getElementById("view")
 
         function updateCounters() {
-            fetch(`${googleScriptURL}?action=getStats`)
+            fetch(`${googleScriptURL}&action=getStats`)
                 .then(response => response.text())
                 .then(data => {
                     const viewCount = data.split(";")[0].split("=")[1]
