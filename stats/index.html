@@ -10,77 +10,76 @@
     </head>
     <body>
         <div class="flex h-screen">
-            <div class="m-auto">
-                <h1 class="font-semibold text-xl">Dawn</h1>
-                <div class="stats stats-vertical lg:stats-horizontal shadow">
-                    <div class="stat">
-                        <div class="stat-figure text-secondary">
-                            <img class="rounded shadow-xl max-w-40 m-4" src="/images/2024-11-01.jpg" alt="Dawn">
-                        </div>
-                        <p class="text-right text-error font-semibold">2024-11-01</p>
-                    </div>
-
-                    <div class="stat">
-                        <div class="stat-figure text-primary">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                class="inline-block h-8 w-8 stroke-current">
-                                <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-title">Total Likes</div>
-                        <div class="stat-value text-primary" id="like">0</div>
-                    </div>
-
-                    <div class="stat">
-                        <div class="stat-figure text-secondary">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                class="inline-block h-8 w-8 stroke-current">
-                                <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-title">Page Views</div>
-                        <div class="stat-value text-secondary" id="view">0</div>
-                    </div>
+            <div class="m-auto" id="container">
+                <div class="overflow-x-auto">
+                    <table class="table">
+                        <!-- head -->
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Date</th>
+                                <th>Theme</th>
+                                <th>Image</th>
+                                <th>Views</th>
+                                <th>Likes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </body>
     <script>
-        const day = new Date().toISOString().split('T')[0];
-        const googleScriptURL = `https://script.google.com/macros/s/AKfycbyC_L33KsHGWQk-H6Cp75TmZSOd2KMVMjtbei58PprIOA2yTt96AweD3aoH-aCw_2JVlA/exec?day=${day}`
+        const googleScriptURL = "https://script.google.com/macros/s/AKfycbyC_L33KsHGWQk-H6Cp75TmZSOd2KMVMjtbei58PprIOA2yTt96AweD3aoH-aCw_2JVlA/exec"
+        const days = ["2024-11-01", "2024-11-02", "2024-11-03"]
+        const words = ["Dawn", "Cascade", "Luminous"]
+        const tbody = document.getElementById("tbody")
 
-        const like = document.getElementById("like")
-        const view = document.getElementById("view")
+        days.map((day, index) => {
+            const tr = document.createElement("tr")
+            tr.classList.add("hover")
+            const th = document.createElement("th")
+            th.innerText = index + 1
+            tr.appendChild(th)
+            const td1 = document.createElement("td")
+            td1.innerText = day
+            tr.appendChild(td1)
+            const td2 = document.createElement("td")
+            td2.innerText = words[index]
+            tr.appendChild(td2)
+            const td3 = document.createElement("td")
+            const img = document.createElement("img")
+            img.classList.add("rounded", "max-w-12")
+            img.src = `/images/${day}.jpg`
+            img.alt = words[index]
+            td3.appendChild(img)
+            tr.appendChild(td3)
+            const td4 = document.createElement("td")
+            td4.id = `view-${day}`
+            td4.innerText = "0"
+            tr.appendChild(td4)
+            const td5 = document.createElement("td")
+            td5.id = `like-${day}`
+            td5.innerText = "0"
+            tr.appendChild(td5)
+            tbody.appendChild(tr)
+        })
+        days.map(day => getStatsForDay(day))
 
-        function updateCounters() {
-            fetch(`${googleScriptURL}&action=getStats`)
+        function getStatsForDay(day) {
+            fetch(`${googleScriptURL}?action=getStats&day=${day}`)
                 .then(response => response.text())
                 .then(data => {
+                    const like = document.getElementById(`like-${day}`)
+                    const view = document.getElementById(`view-${day}`)
                     const viewCount = data.split(";")[0].split("=")[1]
                     view.innerText = viewCount;
                     const likeCount = data.split(";")[1].split("=")[1]
                     like.innerText = likeCount;
-
                 })
                 .catch(error => console.error("Error fetching like counter:", error));
         }
-
-        updateCounters()
-
 
     </script>
 </html>
