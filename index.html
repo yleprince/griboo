@@ -47,7 +47,14 @@
             "Twilight"]
         const firstDate = new Date("2024-11-01");
         const today = new Date().toISOString().split('T')[0];
+
         let selectedDate = today;
+        if (getUrlParameters() !== null) {
+            let dateParam = getUrlParameters();
+            if (new Date(dateParam) >= firstDate && new Date(dateParam) <= new Date(today)) {
+                selectedDate = dateParam;
+            }
+        }
         const googleScriptURL = `https://script.google.com/macros/s/AKfycbyC_L33KsHGWQk-H6Cp75TmZSOd2KMVMjtbei58PprIOA2yTt96AweD3aoH-aCw_2JVlA/exec`
         updatePageViews(selectedDate);
         updateWord(selectedDate)
@@ -120,7 +127,6 @@
         }
 
         function updateLikeCounter(dateStr) {
-            console.log("Fetching like counter for", dateStr);
             fetch(`${googleScriptURL}?day=${dateStr}&action=getLikes`)
                 .then(response => response.text())
                 .then(data => {
@@ -133,7 +139,6 @@
             fetch(`${googleScriptURL}?day=${dateStr}&action=incrementLike`)
                 .then(response => response.text())
                 .then(data => {
-                    console.log("Likes: " + data);
                     document.getElementById("likeCounter").innerText = data;
                     setCookie("liked", selectedDate, "true", 30); // Set "liked" cookie for 7 days
                 })
@@ -144,8 +149,7 @@
             fetch(`${googleScriptURL}?day=${dateStr}`)
                 .then(response => response.text())
                 .then(data => {
-                    console.log(data);
-
+                    console.log("This page views count: ", data);
                 })
                 .catch(error => console.error("Error fetching page counter:", error));
         }
@@ -172,13 +176,17 @@
 
         if (checkLikedStatus(selectedDate)) {
             like.setAttribute("fill", "currentColor")
-            console.log("Photo already liked")
         }
 
         updateLikeCounter(selectedDate);
 
         function checkLikedStatus(dateStr) {
             return getCookie("liked", dateStr) === "true";
+        }
+
+        function getUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('day');
         }
 
     </script>
