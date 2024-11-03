@@ -74,6 +74,16 @@
 
         const previousDate = document.getElementById("previousDate");
         const nextDate = document.getElementById("nextDate");
+
+        if (selectedDate === today) {
+            nextDate.style.display = "none";
+        } else if (selectedDate === firstDate.toISOString().split('T')[0]) {
+            previousDate.style.display = "none";
+        } else {
+            nextDate.style.display = "block";
+            previousDate.style.display = "block";
+        }
+
         nextDate.addEventListener("click", () => {
             previousDate.style.display = "block";
             const nextDay = new Date(selectedDate);
