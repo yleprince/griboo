@@ -51,12 +51,12 @@
             "Harmony", "Emberglow", "Pulse", "Solstice", "Radiant", "Drift",
             "Twilight"]
         const firstDate = new Date("2024-11-01");
-        const today = new Date().toISOString().split('T')[0];
+        const lastDate = new Date("2024-11-30");
 
-        let selectedDate = today;
+        let selectedDate = lastDate.toISOString().split('T')[0];
         if (getUrlParameters() !== null) {
             let dateParam = getUrlParameters();
-            if (new Date(dateParam) >= firstDate && new Date(dateParam) <= new Date(today)) {
+            if (new Date(dateParam) >= firstDate && new Date(dateParam) <= new Date(lastDate)) {
                 selectedDate = dateParam;
             }
         }
@@ -75,7 +75,8 @@
         const previousDate = document.getElementById("previousDate");
         const nextDate = document.getElementById("nextDate");
 
-        if (selectedDate === today) {
+
+        if (selectedDate === lastDate.toISOString().split('T')[0]) {
             nextDate.style.display = "none";
         } else if (selectedDate === firstDate.toISOString().split('T')[0]) {
             previousDate.style.display = "none";
@@ -84,11 +85,11 @@
             previousDate.style.display = "block";
         }
 
-        nextDate.addEventListener("click", () => {
+        function goNext() {
             previousDate.style.display = "block";
             const nextDay = new Date(selectedDate);
             nextDay.setDate(nextDay.getDate() + 1);
-            if (nextDay >= new Date(today)) {
+            if (nextDay >= new Date(lastDate)) {
                 nextDate.style.display = "none";
             }
             const nextDateStr = nextDay.toISOString().split('T')[0];
@@ -98,9 +99,9 @@
             updateLikeCounter(nextDateStr);
             updatePageViews(nextDateStr);
             selectedDate = nextDateStr;
-        });
+        }
 
-        previousDate.addEventListener("click", () => {
+        function goPrevious() {
             nextDate.style.display = "block";
             const previousDay = new Date(selectedDate);
             previousDay.setDate(previousDay.getDate() - 1);
@@ -114,8 +115,19 @@
             updateLikeCounter(previousDateStr);
             updatePageViews(previousDateStr);
             selectedDate = previousDateStr;
-        });
+        }
 
+        nextDate.addEventListener("click", goNext);
+        previousDate.addEventListener("click", goPrevious);
+
+        // Keyboard navigation
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowRight" && nextDate.style.display !== "none") {
+                goNext();
+            } else if (event.key === "ArrowLeft" && previousDate.style.display !== "none") {
+                goPrevious();
+            }
+        });
 
         function getSelectedIndexFromDateStr(dateStr) {
             return parseInt(dateStr.split("-")[2], 10) - 1;
